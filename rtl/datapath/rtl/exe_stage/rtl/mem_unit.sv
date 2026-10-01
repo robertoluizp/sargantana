@@ -32,6 +32,7 @@ module mem_unit
     input logic                  kill_i,                 // Exception detected at Commit
     input logic                  flush_i,                // Delete all load_store_queue entries
     input logic                  en_ld_st_translation_i,
+    input logic [drac_pkg::ASID_SIZE-1:0] satp_asid_i,
     input logic                  en_ld_st_g_translation_i,
     output logic                 csr_hs_ld_st_inst_o,
 
@@ -301,6 +302,7 @@ load_store_queue  #(
     .rstn_i             (rstn_i),
     .instruction_i      (instruction_to_lsq),
     .en_ld_st_translation_i (en_ld_st_translation_i),
+    .satp_asid_i            (satp_asid_i),
     .en_ld_st_g_translation_i (en_ld_st_g_translation_i),
     .csr_hs_ld_st_inst_o (csr_hs_ld_st_inst_o),
     .flush_i            (flush_to_lsq),

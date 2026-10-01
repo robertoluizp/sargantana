@@ -32,6 +32,7 @@
     input logic                         en_translation_i, // virtualization mechanism enabled
     input logic                         en_g_translation_i,
     input logic                         en_ld_st_translation_i,
+    input logic [drac_pkg::ASID_SIZE-1:0] satp_asid_i,
     input logic                         en_ld_st_g_translation_i,
     output logic                        csr_hs_ld_st_inst_o,
 
@@ -500,6 +501,7 @@ mem_unit #(
     .clk_i                  (clk_i),
     .rstn_i                 (rstn_i),
     .en_ld_st_translation_i (en_ld_st_translation_i),
+    .satp_asid_i            (satp_asid_i),
     .en_ld_st_g_translation_i (en_ld_st_g_translation_i),
     .csr_hs_ld_st_inst_o    (csr_hs_ld_st_inst_o),
     .instruction_i          (vagu_mem_instr),

@@ -44,6 +44,7 @@ module datapath
     input logic             en_translation_i,
     input logic             en_g_translation_i,
     input logic             en_ld_st_translation_i,
+    input logic [drac_pkg::ASID_SIZE-1:0] satp_asid_i,
     input logic             en_ld_st_g_translation_i,
     input logic             csr_hu_i,
     input debug_reg_in_t    debug_reg_i,
@@ -1249,6 +1250,7 @@ assign debug_reg_o.rnm_read_resp = stage_no_stall_rr_q.prs1;
         .en_translation_i(en_translation_i),
         .en_g_translation_i(en_g_translation_i),
         .en_ld_st_translation_i(en_ld_st_translation_i),
+        .satp_asid_i(satp_asid_i),
         .en_ld_st_g_translation_i(en_ld_st_g_translation_i),
         .csr_hs_ld_st_inst_o(csr_hs_ld_st_inst_o),
 

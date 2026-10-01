@@ -72,7 +72,10 @@ module top_drac
     // iTLB Interface
     input  mmu_pkg::cache_tlb_comm_t icache_itlb_comm_i,
     output mmu_pkg::tlb_cache_comm_t itlb_icache_comm_o,
-    
+    // Current address space (satp.ASID). The fetch-side TLB request is assembled
+    // outside the core, so it needs this to tag icache_itlb_comm_i.req.asid.
+    output logic [drac_pkg::ASID_SIZE-1:0] satp_asid_o,
+
     // PTW - Memory Interface
     output mmu_pkg::ptw_dmem_comm_t ptw_dmem_comm_o,
     input  mmu_pkg::dmem_ptw_comm_t dmem_ptw_comm_i,
@@ -182,6 +185,8 @@ req_cpu_csr_t req_datapath_csr_interface;
 
 csr_ptw_comm_t csr_ptw_comm;
 logic [drac_pkg::PPN_SIZE-1:0] csr_satp;
+logic [drac_pkg::ASID_SIZE-1:0] csr_satp_asid;
+assign satp_asid_o = csr_satp_asid;
 logic [drac_pkg::PPN_SIZE-1:0] csr_vsatp;
 logic [drac_pkg::PPN_SIZE-1:0] csr_hgatp;
 assign csr_ptw_comm.satp = {{(riscv_pkg::XLEN-PHY_ADDR_SIZE){1'b0}}, csr_satp}; // PTW expects 64 bits
@@ -336,6 +341,7 @@ datapath #(
     .csr_s_cmo_i(csr_s_cmo),
     .csr_h_cmo_i(csr_h_cmo),
     .en_ld_st_translation_i(en_ld_st_translation),
+    .satp_asid_i(csr_satp_asid),
     .en_ld_st_g_translation_i(en_ld_st_g_translation),
     .csr_hu_i(csr_hu),
     .csr_hs_ld_st_inst_o(csr_hs_ld_st_inst_int),
@@ -362,6 +368,7 @@ assign fcsr_flags_valid = |req_datapath_csr_interface.csr_retire;
 
 csr_bsc #(
     .PPN_WIDTH(drac_pkg::PPN_SIZE),
+    .ASID_WIDTH(drac_pkg::ASID_SIZE),
     .PROGRAM_BUFFER_ADDR(DracCfg.DebugProgramBufferBase)
 ) csr_inst (
     .clk_i(clk_i),
@@ -447,6 +454,7 @@ csr_bsc #(
     .csr_hu_o(csr_hu),
 
     .satp_ppn_o(csr_satp),                 // Page table base pointer for the PTW
+    .satp_asid_o(csr_satp_asid),           // ASID that tags the TLB entries
     .vsatp_ppn_o(csr_vsatp),                 // Page table base pointer for the PTW
     .hgatp_ppn_o(csr_hgatp),                 // Page table base pointer for the PTW
 
